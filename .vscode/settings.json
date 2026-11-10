@@ -1,0 +1,6 @@
+{
+    "files.exclude": {
+        "cubemx/Drivers": true,
+        "cubemx/EWARM": true
+    }
+}

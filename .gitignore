@@ -14,8 +14,8 @@ Debug
 *~
 *.o
 *.obj
-*.out
-*.bak
+*.ot
+*.bauk
 *.dep
 *.lib
 *.i
@@ -28,10 +28,10 @@ Debug
 GPATH
 GRTAGS
 GTAGS
-.vscode
 JLinkLog.txt
 JLinkSettings.ini
 DebugConfig/
 RTE/
 settings/
 *.uvguix*
+.cache/
