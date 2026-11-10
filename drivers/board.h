@@ -68,8 +68,8 @@ extern "C"
  */
 
 #define BSP_USING_UART1
-#define BSP_UART1_TX_PIN       "PA9"
-#define BSP_UART1_RX_PIN       "PA10"
+#define BSP_UART1_TX_PIN       "PB6"
+#define BSP_UART1_RX_PIN       "PB7"
 
 /*-------------------------- UART CONFIG END --------------------------*/
 
@@ -87,10 +87,10 @@ extern "C"
  *                             #define BSP_I2C1_SDA_PIN    GET_PIN(port, pin)   ->   GET_PIN(C, 12)
  */
 
-/*#define BSP_USING_I2C1*/
+#define BSP_USING_I2C1
 #ifdef BSP_USING_I2C1
-#define BSP_I2C1_SCL_PIN    GET_PIN(port, pin)
-#define BSP_I2C1_SDA_PIN    GET_PIN(port, pin)
+#define BSP_I2C1_SCL_PIN    GET_PIN(B, 10)
+#define BSP_I2C1_SDA_PIN    GET_PIN(B, 11)
 #endif
 
 /*#define BSP_USING_I2C2*/
