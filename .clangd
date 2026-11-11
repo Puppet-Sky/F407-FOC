@@ -1,4 +1,6 @@
 CompileFlags:
+  Remove:
+    - "-fabi-version=*"
   Add:
     - "-mcpu=cortex-m4"
     - "-mthumb"
