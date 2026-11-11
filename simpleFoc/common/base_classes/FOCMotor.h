@@ -242,6 +242,7 @@ class FOCMotor
 
     // monitoring functions
 //    Print* monitor_port; //!< Serial terminal variable if provided
+    int* monitor_port; //!< Serial terminal variable if provided
   private:
     // monitor counting variable
     unsigned int monitor_cnt = 0 ; //!< counting variable

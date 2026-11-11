@@ -48,6 +48,11 @@ extern "C"
 
 /*-------------------------- CLOCK CONFIG END --------------------------*/
 
+#define PWM_ENABLE_PIN          GET_PIN(A, 6)
+#define PWM_A_PIN               GET_PIN(A, 7)
+#define PWM_B_PIN               GET_PIN(A, 8)
+#define PWM_C_PIN               GET_PIN(A, 9)
+
 /*-------------------------- UART CONFIG BEGIN --------------------------*/
 
 /** After configuring corresponding UART or UART DMA, you can use it.
