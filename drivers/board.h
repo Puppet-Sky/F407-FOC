@@ -89,8 +89,9 @@ extern "C"
 
 #define BSP_USING_I2C1
 #ifdef BSP_USING_I2C1
-#define BSP_I2C1_SCL_PIN    GET_PIN(B, 10)
-#define BSP_I2C1_SDA_PIN    GET_PIN(B, 11)
+/* Soft I2C on same pins as CubeMX hardware I2C1 (PB8/PB9) for AS5600 */
+#define BSP_I2C1_SCL_PIN    GET_PIN(B, 8)
+#define BSP_I2C1_SDA_PIN    GET_PIN(B, 9)
 #endif
 
 /*#define BSP_USING_I2C2*/

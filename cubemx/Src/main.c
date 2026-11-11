@@ -66,6 +66,18 @@ static void MX_USART1_UART_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
+/**
+  * @brief  CubeMX peripheral initialization for RT-Thread board stage.
+  *         HAL_Init / SystemClock_Config already done by RT-Thread BSP.
+  */
+void MX_CubeMX_Init(void)
+{
+  MX_GPIO_Init();
+  MX_FSMC_Init();
+  MX_I2C1_Init();
+  MX_TIM1_Init();
+}
+
 /* USER CODE END 0 */
 
 /**

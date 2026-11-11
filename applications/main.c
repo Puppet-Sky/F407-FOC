@@ -9,20 +9,31 @@
  */
 
 #include <rtthread.h>
+#include "main.h"
 
 #define DBG_TAG "main"
 #define DBG_LVL DBG_LOG
 #include <rtdbg.h>
 
+extern rt_err_t as5600_stream_start(rt_uint32_t period_us);
+
 int main(void)
 {
     int count = 1;
+//    as5600_stream_start(500);
 
     while (count++)
     {
-        LOG_D("Hello RT-Thread!");
         rt_thread_mdelay(1000);
     }
 
     return RT_EOK;
 }
+
+int __board_init(void)
+{
+    LOG_D("__board_init");
+    MX_CubeMX_Init();
+    return RT_EOK;
+}
+INIT_BOARD_EXPORT(__board_init);

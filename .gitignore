@@ -35,3 +35,6 @@ RTE/
 settings/
 *.uvguix*
 .cache/
+jump.csv
+*.csv
+

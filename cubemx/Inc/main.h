@@ -31,7 +31,11 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+/* RT-Thread drv_common.h may define Error_Handler() as a macro; drop it so the
+ * CubeMX prototype below can compile when board.h is included first. */
+#ifdef Error_Handler
+#undef Error_Handler
+#endif
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -55,7 +59,9 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
 void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
-
+void MX_CubeMX_Init(void);
+extern I2C_HandleTypeDef hi2c1;
+extern SRAM_HandleTypeDef hsram1;
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
