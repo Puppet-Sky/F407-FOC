@@ -2,7 +2,11 @@
 // #include "./communication/SimpleFOCDebug.h"
 
 #include "rtthread.h"
-#define SIMPLEFOC_DEBUG(fmt, ...) rt_kprintf(fmt, ##__VA_ARGS__)
+
+#define DRV_DEBUG
+#define LOG_TAG              "BLDCMotor"
+#include <drv_log.h>
+#define SIMPLEFOC_DEBUG(fmt, ...) LOG_D(fmt, ##__VA_ARGS__)
 
 // see https://www.youtube.com/watch?v=InzXA7mWBWE Slide 5
 // each is 60 degrees with values for 3 phases of 1=positive -1=negative 0=high-z

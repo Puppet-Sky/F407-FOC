@@ -58,7 +58,7 @@ void delay(unsigned long ms);
 void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
 
 /* Exported functions prototypes ---------------------------------------------*/
-/* Error_Handler 使用 drivers/include/drv_common.h 中的宏。 */
+void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
 void MX_init(void);

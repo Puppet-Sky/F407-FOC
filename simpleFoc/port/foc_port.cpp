@@ -1,3 +1,4 @@
+#include "Sensor.h"
 #include "foc_api.h"
 
 #include "../BLDCMotor.h"
@@ -5,6 +6,7 @@
 #include "../drivers/BLDCDriver3PWM.h"
 #include "../sensor/AS5600_I2C.h"
 #include "board.h"
+#include "rtthread.h"
 
 namespace
 {
@@ -36,15 +38,23 @@ public:
         sensor.min_elapsed_time = 0.001f;
 
         driver.voltage_power_supply = 12;
-        driver.voltage_limit = 10;
+        driver.voltage_limit = 6;
         driver.init();
 
         motor.linkDriver(&driver);
-        motor.voltage_limit = 5;
+        motor.voltage_limit = 3;
         motor.controller = MotionControlType::velocity_openloop;
         motor.init();
 
-        driver.enable();
+        motor.linkSensor(&sensor);
+        motor.sensor_direction = Direction::UNKNOWN;
+        motor.voltage_sensor_align = 4;
+        motor.initFOC();
+
+        // driver.enable();
+        rt_kprintf("\nzero electric angle: %d.%03d\n", (int)motor.zero_electric_angle, (int)((motor.zero_electric_angle - (int)motor.zero_electric_angle) * 1000));
+
+        delay(1000);
     }
 
     void poll()

@@ -1,7 +1,10 @@
 #include <rtthread.h>
 #include "main.h"
 #include "simpleFoc/port/foc_api.h"
+#include "stm32f407xx.h"
+#include "stm32f4xx_hal_gpio.h"
 
+extern TIM_HandleTypeDef htim1;
 extern TIM_HandleTypeDef htim2;
 
 static void micros_counter_init(void)
@@ -36,11 +39,17 @@ INIT_BOARD_EXPORT(__board_init);
 
 void board_foc_timer_start(void)
 {
-    HAL_TIM_Base_Start_IT(&htim2);
+    HAL_TIM_Base_Start_IT(&htim1);
+}
+
+void TIM1_UP_TIM10_IRQHandler(void)
+{
+    HAL_TIM_IRQHandler(&htim1);
+    foc_timer_isr();
 }
 
 void TIM2_IRQHandler(void)
 {
     HAL_TIM_IRQHandler(&htim2);
-    foc_timer_isr();
+    // foc_timer_isr();
 }

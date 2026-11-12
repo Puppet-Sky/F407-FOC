@@ -1,8 +1,8 @@
 #include "stm32_pwm.h"
-
+#include "main.h"
 #include <rtthread.h>
 #include "board.h"
-#include "main.h"
+
 
 extern TIM_HandleTypeDef htim1;
 
@@ -64,6 +64,7 @@ long stm32_pwm_start(int pin_a, int pin_b, int pin_c)
     HAL_TIM_PWM_Start(phase_a->timer, phase_a->channel);
     HAL_TIM_PWM_Start(phase_b->timer, phase_b->channel);
     HAL_TIM_PWM_Start(phase_c->timer, phase_c->channel);
+
     return (long)__HAL_TIM_GET_AUTORELOAD(phase_a->timer);
 }
 
