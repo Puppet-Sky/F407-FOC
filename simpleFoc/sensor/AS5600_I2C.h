@@ -36,7 +36,7 @@ class AS5600_I2C: public Sensor{
         
     /** sensor initialise pins */
     //void init(TwoWire* _wire = &Wire); // 根据STM32的框架，重新写
-    void init(I2C_HandleTypeDef* hi2c1);
+    void init();
 
     // implementation of abstract functions of the Sensor class
     /** get current angle (rad) */
@@ -70,7 +70,6 @@ class AS5600_I2C: public Sensor{
     
     /* the two wire instance for this sensor */
     //TwoWire* wire;
-    I2C_HandleTypeDef* hi2c1;
 
 };
 

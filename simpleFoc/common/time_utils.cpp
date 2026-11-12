@@ -11,8 +11,7 @@ void _delay(unsigned long ms){
   while( _micros() < t ){}; 
 #else
   // regular micros
-//  delay(ms);
-  HAL_Delay(ms);
+  delay(ms);
 #endif
 }
 

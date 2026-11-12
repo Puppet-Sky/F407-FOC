@@ -49,9 +49,9 @@ extern "C"
 /*-------------------------- CLOCK CONFIG END --------------------------*/
 
 #define PWM_ENABLE_PIN          GET_PIN(A, 6)
-#define PWM_A_PIN               GET_PIN(A, 7)
-#define PWM_B_PIN               GET_PIN(A, 8)
-#define PWM_C_PIN               GET_PIN(A, 9)
+#define PWM_A_PIN               GET_PIN(A, 8)
+#define PWM_B_PIN               GET_PIN(A, 9)
+#define PWM_C_PIN               GET_PIN(A, 10)
 
 /*-------------------------- UART CONFIG BEGIN --------------------------*/
 

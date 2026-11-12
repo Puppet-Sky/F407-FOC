@@ -1,8 +1,5 @@
 #include "BLDCDriver3PWM.h"
-#include "board.h"
-#include "rtthread.h"
-
-#define PWM_TIME htim1
+#include "../port/stm32_pwm.h"
 
 BLDCDriver3PWM::BLDCDriver3PWM(int phA, int phB, int phC, int en1, int en2, int en3){
   // Pin initialization
@@ -25,7 +22,7 @@ BLDCDriver3PWM::BLDCDriver3PWM(int phA, int phB, int phC, int en1, int en2, int 
 // enable motor driver
 void  BLDCDriver3PWM::enable(){
     // enable_pin the driver - if enable_pin pin available
-    rt_pin_write(PWM_ENABLE_PIN, PIN_HIGH);
+    if (_isset(enableA_pin)) stm32_pwm_enable(enableA_pin, 1);
     setPwm(0,0,0);
 }
 
@@ -35,7 +32,7 @@ void BLDCDriver3PWM::disable()
   // set zero to PWM
   setPwm(0, 0, 0);
   // disable the driver - if enable_pin pin available
-  rt_pin_write(PWM_ENABLE_PIN, PIN_LOW);
+  if (_isset(enableA_pin)) stm32_pwm_enable(enableA_pin, 0);
 
 }
 
@@ -47,13 +44,10 @@ int BLDCDriver3PWM::init() {
   if(!_isset(voltage_limit) || voltage_limit > voltage_power_supply) voltage_limit =  voltage_power_supply;
 
   // Set the pwm frequency to the pins
-  pwm_frequency = __HAL_TIM_GET_AUTORELOAD(&PWM_TIME);
-  HAL_TIM_PWM_Start(&PWM_TIME, TIM_CHANNEL_1);
-  HAL_TIM_PWM_Start(&PWM_TIME, TIM_CHANNEL_2);
-  HAL_TIM_PWM_Start(&PWM_TIME, TIM_CHANNEL_3);
-  initialized = true;
+  pwm_frequency = stm32_pwm_start(pwmA, pwmB, pwmC);
+  initialized = pwm_frequency > 0;
 
-  return 1;
+  return initialized ? 1 : 0;
 }
 
 
@@ -78,5 +72,5 @@ void BLDCDriver3PWM::setPwm(float Ua, float Ub, float Uc) {
 
   // hardware specific writing
   // hardware specific function - depending on driver and mcu
-  _writeDutyCycle3PWM(&PWM_TIME, dc_a, dc_b, dc_c);
+  stm32_pwm_write(pwmA, pwmB, pwmC, dc_a, dc_b, dc_c);
 }

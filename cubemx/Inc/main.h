@@ -41,7 +41,7 @@ extern "C" {
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
 #define delayMicroseconds micros_delay
-#define delay _delay 
+void delay(unsigned long ms); 
 
 /* USER CODE END ET */
 
@@ -58,7 +58,7 @@ extern "C" {
 void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
 
 /* Exported functions prototypes ---------------------------------------------*/
-void Error_Handler(void);
+/* Error_Handler 使用 drivers/include/drv_common.h 中的宏。 */
 
 /* USER CODE BEGIN EFP */
 void MX_init(void);

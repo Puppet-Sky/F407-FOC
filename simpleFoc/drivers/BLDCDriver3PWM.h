@@ -5,8 +5,6 @@
 #include "../common/foc_utils.h"
 #include "../common/time_utils.h"
 #include "../common/defaults.h"
-#include "main_Cpp.h"
-//#include "hardware_api.h"
 
 /**
  3 pwm bldc driver class

@@ -2,6 +2,7 @@ CompileFlags:
   Remove:
     - "-fabi-version=*"
   Add:
+    - "--target=arm-none-eabi"
     - "-mcpu=cortex-m4"
     - "-mthumb"
     - "-mfpu=fpv4-sp-d16"
@@ -23,6 +24,6 @@ CompileFlags:
     - "-IG:/CODE/FOC/F407-FOC/cubemx/Inc"
     - "-IG:/CODE/FOC/F407-FOC/simpleFoc/common"
     - "-IG:/CODE/FOC/F407-FOC/simpleFoc/common/base_classes"
-    - "-isystemF:/RT-ThreadStudio/repo/Extract/ToolChain_Support_Packages/ARM/GNU_Tools_for_ARM_Embedded_Processors/5.4.1/arm-none-eabi/include"
-    - "-isystemF:/RT-ThreadStudio/repo/Extract/ToolChain_Support_Packages/ARM/GNU_Tools_for_ARM_Embedded_Processors/5.4.1/lib/gcc/arm-none-eabi/5.4.1/include"
-    - "-isystemF:/RT-ThreadStudio/repo/Extract/ToolChain_Support_Packages/ARM/GNU_Tools_for_ARM_Embedded_Processors/5.4.1/lib/gcc/arm-none-eabi/5.4.1/include-fixed"
+    - "-isystemD:/SoftWare_Work/RT-ThreadStudio/repo/Extract/ToolChain_Support_Packages/ARM/GNU_Tools_for_ARM_Embedded_Processors/5.4.1/arm-none-eabi/include"
+    - "-isystemD:/SoftWare_Work/RT-ThreadStudio/repo/Extract/ToolChain_Support_Packages/ARM/GNU_Tools_for_ARM_Embedded_Processors/5.4.1/lib/gcc/arm-none-eabi/5.4.1/include"
+    - "-isystemD:/SoftWare_Work/RT-ThreadStudio/repo/Extract/ToolChain_Support_Packages/ARM/GNU_Tools_for_ARM_Embedded_Processors/5.4.1/lib/gcc/arm-none-eabi/5.4.1/include-fixed"

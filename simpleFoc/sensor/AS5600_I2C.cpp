@@ -1,12 +1,5 @@
 #include "AS5600_I2C.h"
-
-/** Typical configuration for the 12bit AMS AS5600 magnetic sensor over I2C interface */
-struct AS5600_I2CConfig_s AS5600_I2C_Config = {
-  .chip_address   = 0x36, // AS5600的I2C地址
-  .bit_resolution = 12,   // 分辨率
-  .angle_register = 0x0C, // 角度寄存器
-  .data_start_bit = 11    // 数据起始位
-};
+#include "../port/stm32_i2c.h"
 
 /** Typical configuration for the 12bit AMS AS5048 magnetic sensor over I2C interface */
 // MagneticSensorI2CConfig_s AS5048_I2C = {
@@ -58,9 +51,8 @@ AS5600_I2C::AS5600_I2C(AS5600_I2CConfig_s config){
 }
 
 // 初始化
-void AS5600_I2C::init(I2C_HandleTypeDef* _hi2c1){
-  hi2c1 = _hi2c1;
-  this->Sensor::init(); // call base class init
+void AS5600_I2C::init(){
+  this->Sensor::init();
 }
 
 //  Shaft angle calculation
@@ -82,17 +74,13 @@ int AS5600_I2C::getRawCount(){
 * Returns the value of the register
 */
 int AS5600_I2C::read(uint8_t angle_reg_msb) {
-    uint8_t buffer[2]; // 用于存储读取的数据
-    HAL_StatusTypeDef status;
-    // 发送寄存器地址
-    status = HAL_I2C_Mem_Read(hi2c1, chip_address << 1, angle_reg_msb, I2C_MEMADD_SIZE_8BIT, buffer, 2, 50);
-    if (status != HAL_OK) {
-        // 处理错误
-        return -1; // 返回错误代码
+    uint8_t buffer[2];
+
+    if (stm32_i2c_read_mem(chip_address, angle_reg_msb, buffer, 2) != 0)
+    {
+        return -1;
     }
-    // 将读取的两个字节组合成一个整数
-    int value = (buffer[0] << 8) | buffer[1];
-    return value;
+    return (buffer[0] << 8) | buffer[1];
 }
 
 /*
