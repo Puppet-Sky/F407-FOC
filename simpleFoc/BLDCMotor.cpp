@@ -323,7 +323,7 @@ int BLDCMotor::absoluteZeroSearch() {
 void BLDCMotor::loopFOC() {
   // update sensor - do this even in open-loop mode, as user may be switching between modes and we could lose track
   //                 of full rotations otherwise.
-  if (sensor) sensor->update();
+  // if (sensor) sensor->update();
 
   // if open-loop do nothing
   if( controller==MotionControlType::angle_openloop || controller==MotionControlType::velocity_openloop ) return;

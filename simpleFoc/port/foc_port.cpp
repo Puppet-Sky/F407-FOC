@@ -40,18 +40,31 @@ public:
         driver.voltage_power_supply = 12;
         driver.voltage_limit = 6;
         driver.init();
-
         motor.linkDriver(&driver);
-        motor.voltage_limit = 3;
-        motor.controller = MotionControlType::velocity_openloop;
+        motor.linkSensor(&sensor);
+
+        motor.controller = MotionControlType::angle;
+
+        /* PID 速度环*/
+        motor.PID_velocity.P = 0.1f;
+        motor.PID_velocity.I = 5.0f;
+        motor.PID_velocity.D = 0.0f;
+        motor.PID_velocity.output_ramp = 2000.0f;
+
+        /* 速度环低通滤波器，时间常数设置为8ms*/
+        motor.LPF_velocity.Tf = 0.008f;
+
+        /* 位置环*/
+        motor.P_angle.P = 50.0f;
+
+        motor.voltage_limit = 6;
+        motor.velocity_limit = 60.0f;
         motor.init();
 
-        motor.linkSensor(&sensor);
         motor.sensor_direction = Direction::UNKNOWN;
-        motor.voltage_sensor_align = 4;
         motor.initFOC();
 
-        // driver.enable();
+        driver.enable();
         rt_kprintf("\nzero electric angle: %d.%03d\n", (int)motor.zero_electric_angle, (int)((motor.zero_electric_angle - (int)motor.zero_electric_angle) * 1000));
 
         delay(1000);
@@ -65,7 +78,8 @@ public:
 
     void isr()
     {
-        motor.move(target_velocity);
+        motor.loopFOC();
+        motor.move(target_angle);
     }
 
     float velocity() const
@@ -89,7 +103,11 @@ private:
     BLDCMotor motor;
     LowPassFilter lpf;
     volatile float target_velocity;
-    volatile float measured_velocity;
+    volatile float target_current;
+    volatile float target_angle = 1.0f;
+    volatile float measured_current = 0.0f;
+    volatile float measured_angle = 0.0f;
+    volatile float measured_velocity = 0.0f;
 };
 
 struct AxisGroup

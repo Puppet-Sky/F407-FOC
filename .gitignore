@@ -36,3 +36,4 @@ settings/
 *.uvguix*
 .cache/
 *.csv
+compile_commands.json
