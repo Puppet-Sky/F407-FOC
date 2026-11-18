@@ -37,3 +37,4 @@ settings/
 .cache/
 *.csv
 compile_commands.json
+.cursor/

@@ -56,21 +56,21 @@ void AS5600_I2C::init(){
 }
 
 void AS5600_I2C::update(){
-  long timestamp_before = angle_prev_ts;
-  Sensor::update();
-  if (angle_prev_ts == timestamp_before) {
-    return;
-  }
+ long timestamp_before = angle_prev_ts;
+ Sensor::update();
+ if (angle_prev_ts == timestamp_before) {
+   return;
+ }
 
-  float measured_velocity = Sensor::getVelocity();
-  uint32_t next = sample_index ^ 1u;
-  sample_mechanical[next] = angle_prev;
-  sample_rotations[next] = full_rotations;
-  sample_velocity[next] = measured_velocity;
-  sample_timestamp_us[next] = angle_prev_ts;
-  __DMB();
-  sample_index = next;
-  sample_valid = 1u;
+ float measured_velocity = Sensor::getVelocity();
+ uint32_t next = sample_index ^ 1u;
+ sample_mechanical[next] = angle_prev;
+ sample_rotations[next] = full_rotations;
+ sample_velocity[next] = measured_velocity;
+ sample_timestamp_us[next] = angle_prev_ts;
+ __DMB();
+ sample_index = next;
+ sample_valid = 1u;
 }
 
 bool AS5600_I2C::loadSample(float &mechanical, int32_t &rotations, float &velocity_out, long &timestamp_us) const {

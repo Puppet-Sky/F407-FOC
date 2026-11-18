@@ -14,7 +14,7 @@ int main(void)
     while (1)
     {
         app_log_poll();
-        rt_thread_mdelay(500);
+        rt_thread_mdelay(10);   /* 日志节拍 10ms，实际打印周期由 flog 命令设置 */
     }
 
     return RT_EOK;
