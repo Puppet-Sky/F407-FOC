@@ -42,6 +42,18 @@ class AS5600_I2C: public Sensor{
     /** get current angle (rad) */
     float getSensorAngle() override;
 
+    /** 真实采样，并刷新供外推使用的角速度快照 */
+    void update() override;
+
+    /** 机械角 [0, 2PI)，在上次真实采样上按速度外推 */
+    float getMechanicalAngle() override;
+
+    /** 含整圈的轴角，外推增量不折返 */
+    float getAngle() override;
+
+    /** 上次真实采样算出的角速度，不在读取时重算 */
+    float getVelocity() override;
+
     /** experimental function to check and fix SDA locked LOW issues */
     //int checkBus(byte sda_pin , byte scl_pin );
 
@@ -67,7 +79,17 @@ class AS5600_I2C: public Sensor{
      * it uses angle_register variable
      */
     int getRawCount();
-    
+
+    bool loadSample(float &mechanical, int32_t &rotations, float &velocity_out, long &timestamp_us) const;
+    float sampleDelta(float velocity_out, long timestamp_us) const;
+
+    volatile float sample_mechanical[2] = {0.0f, 0.0f};
+    volatile int32_t sample_rotations[2] = {0, 0};
+    volatile float sample_velocity[2] = {0.0f, 0.0f};
+    volatile long sample_timestamp_us[2] = {0, 0};
+    volatile uint32_t sample_index = 0;
+    volatile uint8_t sample_valid = 0;
+
     /* the two wire instance for this sensor */
     //TwoWire* wire;
 

@@ -55,6 +55,84 @@ void AS5600_I2C::init(){
   this->Sensor::init();
 }
 
+void AS5600_I2C::update(){
+  long timestamp_before = angle_prev_ts;
+  Sensor::update();
+  if (angle_prev_ts == timestamp_before) {
+    return;
+  }
+
+  float measured_velocity = Sensor::getVelocity();
+  uint32_t next = sample_index ^ 1u;
+  sample_mechanical[next] = angle_prev;
+  sample_rotations[next] = full_rotations;
+  sample_velocity[next] = measured_velocity;
+  sample_timestamp_us[next] = angle_prev_ts;
+  __DMB();
+  sample_index = next;
+  sample_valid = 1u;
+}
+
+bool AS5600_I2C::loadSample(float &mechanical, int32_t &rotations, float &velocity_out, long &timestamp_us) const {
+  if (!sample_valid) {
+    return false;
+  }
+  __DMB();
+  uint32_t index = sample_index;
+  __DMB();
+  mechanical = sample_mechanical[index];
+  rotations = sample_rotations[index];
+  velocity_out = sample_velocity[index];
+  timestamp_us = sample_timestamp_us[index];
+  return true;
+}
+
+float AS5600_I2C::sampleDelta(float velocity_out, long timestamp_us) const {
+  const float max_dt = 0.005f;
+  float dt = (float)((long)_micros() - timestamp_us) * 1e-6f;
+  if (dt < 0.0f || dt > max_dt) {
+    return 0.0f;
+  }
+  return velocity_out * dt;
+}
+
+float AS5600_I2C::getMechanicalAngle(){
+  float mechanical;
+  int32_t rotations;
+  float velocity_out;
+  long timestamp_us;
+  if (!loadSample(mechanical, rotations, velocity_out, timestamp_us)) {
+    return angle_prev;
+  }
+  (void)rotations;
+  return _normalizeAngle(mechanical + sampleDelta(velocity_out, timestamp_us));
+}
+
+float AS5600_I2C::getAngle(){
+  float mechanical;
+  int32_t rotations;
+  float velocity_out;
+  long timestamp_us;
+  if (!loadSample(mechanical, rotations, velocity_out, timestamp_us)) {
+    return Sensor::getAngle();
+  }
+  return (float)rotations * _2PI + mechanical + sampleDelta(velocity_out, timestamp_us);
+}
+
+float AS5600_I2C::getVelocity(){
+  float mechanical;
+  int32_t rotations;
+  float velocity_out;
+  long timestamp_us;
+  if (!loadSample(mechanical, rotations, velocity_out, timestamp_us)) {
+    return Sensor::getVelocity();
+  }
+  (void)mechanical;
+  (void)rotations;
+  (void)timestamp_us;
+  return velocity_out;
+}
+
 //  Shaft angle calculation
 //  angle is in radians [rad]
 float AS5600_I2C::getSensorAngle(){

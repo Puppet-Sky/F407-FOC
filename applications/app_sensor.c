@@ -7,7 +7,6 @@ static void sensor_entry(void *parameter)
     while (1)
     {
         foc_sensor_poll();
-        rt_thread_mdelay(1);
     }
 }
 
