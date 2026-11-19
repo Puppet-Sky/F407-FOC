@@ -34,6 +34,9 @@ typedef struct
     float velocity;     /* 实际速度 rad/s (速度环使用的滤波后值) */
     float vel_sp;       /* 位置环输出的速度给定 rad/s */
     float uq;           /* 速度环输出的 q 轴电压 V */
+    float ua;           /* A 相去偏置电压 V（减去三相均值） */
+    float ub;           /* B 相去偏置电压 V（减去三相均值） */
+    float uc;           /* C 相去偏置电压 V（减去三相均值） */
 } foc_state_t;
 void foc_get_state(int axis, foc_state_t *state);
 

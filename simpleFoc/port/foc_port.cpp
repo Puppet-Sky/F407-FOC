@@ -3,7 +3,7 @@
 
 #include "../BLDCMotor.h"
 #include "../common/lowpass_filter.h"
-#include "../common/trajectory.h"
+#include "trajectory.h"
 #include "../drivers/BLDCDriver3PWM.h"
 #include "../sensor/AS5600_I2C.h"
 #include "board.h"
@@ -45,7 +45,7 @@ const float kIsrFreqHz = 5000.0f;
 /* 位置环/速度环(motor.move)与轨迹规划的分频：5kHz / 5 = 1kHz。
  * 分频由 FocAxis::isr 自己做，motor.motion_downsample 保持 0，
  * 保证 traj.update() 与 move() 同频、dt 一致 */
-const uint32_t kMotionDiv = 5;
+const uint32_t kMotionDiv = 1;
 const float kMotionDt = (float)kMotionDiv / kIsrFreqHz;
 
 /* 角度轨迹(S 曲线)默认参数，可在运行时通过 shell 命令 traj 调整 */
@@ -82,7 +82,8 @@ public:
         motor.linkDriver(&driver);
         motor.linkSensor(&sensor);
 
-        motor.controller = MotionControlType::angle;
+        // motor.controller = MotionControlType::velocity_openloop;
+       motor.controller = MotionControlType::velocity;
 
         /* PID 速度环*/
         motor.PID_velocity.P = 0.04f;
@@ -102,6 +103,7 @@ public:
         motor.init();
 
         motor.sensor_direction = Direction::UNKNOWN;
+        motor.foc_modulation = FOCModulationType::SinePWM;
         motor.initFOC();
 
         driver.enable();
@@ -194,6 +196,9 @@ public:
         s->velocity = motor.shaft_velocity;
         s->vel_sp = motor.shaft_velocity_sp;
         s->uq = motor.voltage.q;
+        s->ua = motor.Ua;
+        s->ub = motor.Ub;
+        s->uc = motor.Uc;
     }
 
     /* 控制环参数在线整定。返回 0 成功，-1 名字未知，-2 数值非法 */
@@ -266,15 +271,31 @@ void FocAxis::isr() //目前中断设置的为5Khz, 编码器采样频率为5/2K
 {
     motor.loopFOC();
 
-    /* 位置环/速度环以 1kHz 运行，轨迹规划与其同频同 dt。
-     * 目标角度不直接给位置环，而是经 S 曲线规划成连续的 位置/速度 参考，
-     * 同时把规划速度作为前馈，位置环只需修正跟踪误差 */
+    /* 外环按 kMotionDiv 分频运行；move 入参随 motor.controller 切换：
+     *   angle*: 轨迹规划角度 + 速度前馈
+     *   velocity*: 速度给定 target_velocity
+     */
     if(++motion_div >= kMotionDiv)
     {
         motion_div = 0;
-        const float ref_angle = traj.update(kMotionDt);
-        motor.feed_forward_velocity = vff_gain * traj.velocity();
-        motor.move(ref_angle);
+        switch (motor.controller)
+        {
+        case MotionControlType::angle:
+        case MotionControlType::angle_openloop:
+        {
+            const float ref_angle = traj.update(kMotionDt);
+            motor.feed_forward_velocity = vff_gain * traj.velocity();
+            motor.move(ref_angle);
+            break;
+        }
+        case MotionControlType::velocity:
+        case MotionControlType::velocity_openloop:
+            motor.move(target_velocity);
+            break;
+        default:
+            motor.move(motor.target);
+            break;
+        }
     }
 
     if(++sample_div >= 2)

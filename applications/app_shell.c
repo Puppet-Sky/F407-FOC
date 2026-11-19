@@ -3,6 +3,8 @@
 #include <string.h>
 #include <finsh.h>
 #include "simpleFoc/port/foc_api.h"
+#include "jscope_rtt.h"
+#include "hw_current.h"
 
 /* 日志：flog on [period_ms] / flog off，周期由 main 循环(10ms 节拍)驱动 */
 #define LOG_PERIOD_MIN_MS 10
@@ -206,6 +208,88 @@ static int flog(int argc, char **argv)
     return 0;
 }
 MSH_CMD_EXPORT(flog, flog [on [period_ms] | off | period_ms] - csv state log);
+
+/* jscope            显示 J-Scope RTT 采样状态
+ * jscope on|off     开/关 TIM1 中断里的高频采样（默认开）
+ * 曲线顺序见 jscope_rtt.c 通道名注释。drops 为缓冲满后丢掉的包数 */
+static int jscope(int argc, char **argv)
+{
+    if (argc >= 2)
+    {
+        if (strcmp(argv[1], "on") == 0)
+        {
+            jscope_set_enable(1);
+        }
+        else if (strcmp(argv[1], "off") == 0)
+        {
+            jscope_set_enable(0);
+        }
+        else
+        {
+            rt_kprintf("usage: jscope [on|off]\n");
+            return -1;
+        }
+    }
+    rt_kprintf("jscope %s, drops %u\n", jscope_get_enable() ? "on" : "off", jscope_drop_count());
+    rt_kprintf("JScope_t4f4f4f4f4f4f4f4f4f4f4: us,target,planned,planned_vel,angle,velocity,vel_sp,uq,ua,ub,uc\n");
+    return 0;
+}
+MSH_CMD_EXPORT(jscope, jscope [on|off] - J-Scope RTT sample at TIM1 rate);
+
+/* icur                 打印一次 Ia/Ib/Ic 与原始 ADC
+ * icur cal [n]         零点校准（默认 256 点，电机尽量无电流）
+ * icur on [period_ms]  周期打印（默认 200ms）
+ * icur off             关闭周期打印 */
+static int icur(int argc, char **argv)
+{
+    hw_current_sample_t s;
+    char sa[16], sb[16], sc[16];
+
+    if (argc >= 2)
+    {
+        if (strcmp(argv[1], "cal") == 0)
+        {
+            uint16_t off_a;
+            uint16_t off_b;
+            uint32_t n = (argc >= 3) ? (uint32_t)atoi(argv[2]) : 256u;
+            hw_current_calibrate(n);
+            hw_current_get_offset(&off_a, &off_b);
+            rt_kprintf("cal done: offA=%u offB=%u (n=%u)\n",
+                       (unsigned)off_a, (unsigned)off_b, (unsigned)n);
+            return 0;
+        }
+        if (strcmp(argv[1], "on") == 0)
+        {
+            uint32_t ms = (argc >= 3) ? (uint32_t)atoi(argv[2]) : 200u;
+            if (ms < 20u)
+            {
+                ms = 20u;
+            }
+            hw_current_set_print(ms);
+            rt_kprintf("icur print on, period %u ms\n", (unsigned)ms);
+            return 0;
+        }
+        if (strcmp(argv[1], "off") == 0)
+        {
+            hw_current_set_print(0);
+            rt_kprintf("icur print off\n");
+            return 0;
+        }
+        rt_kprintf("usage: icur | icur cal [n] | icur on [ms] | icur off\n");
+        return -1;
+    }
+
+    hw_current_get(&s);
+    format_fixed(sa, sizeof(sa), s.ia);
+    format_fixed(sb, sizeof(sb), s.ib);
+    format_fixed(sc, sizeof(sc), s.ic);
+    rt_kprintf("rawA=%u rawB=%u Ia=%sA Ib=%sA Ic=%sA seq=%u print=%ums\n",
+               (unsigned)s.raw_a, (unsigned)s.raw_b,
+               sa, sb, sc, (unsigned)s.seq,
+               (unsigned)hw_current_get_print_period());
+    return 0;
+}
+MSH_CMD_EXPORT(icur, icur | cal | on [ms] | off - phase current);
 
 void app_log_poll(void)
 {
